@@ -12,11 +12,10 @@ import type {
   ItemListData,
   ItemQuery,
   ItemStats,
-  Session,
   SuccessResponse,
   UpdateItemInput,
 } from '../../api/contract'
-import { itemKeys, sessionKeys } from '../../lib/queryKeys'
+import { itemKeys } from '../../lib/queryKeys'
 
 export function useItems(query: ItemQuery) {
   return useQuery({
@@ -132,34 +131,6 @@ export function useDeleteItem() {
         queryClient.invalidateQueries({ queryKey: itemKeys.stats() }),
         queryClient.removeQueries({ queryKey: itemKeys.detail(id) }),
       ])
-    },
-  })
-}
-
-export function useSessions() {
-  return useQuery({
-    queryKey: sessionKeys.all,
-    queryFn: async ({ signal }) => {
-      const response = await apiClient.get<SuccessResponse<{ sessions: Session[] }>>(
-        '/auth/sessions',
-        { signal },
-      )
-      return response.data.data.sessions
-    },
-  })
-}
-
-export function useRevokeSession() {
-  const queryClient = useQueryClient()
-  return useMutation({
-    mutationFn: async (id: string) => {
-      await apiClient.delete(`/auth/sessions/${id}`)
-      return id
-    },
-    onSuccess: (id) => {
-      queryClient.setQueryData<Session[]>(sessionKeys.all, (sessions) =>
-        sessions?.filter((session) => session._id !== id),
-      )
     },
   })
 }

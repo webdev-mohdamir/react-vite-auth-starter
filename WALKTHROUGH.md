@@ -23,7 +23,10 @@ Defines backend envelope, error, user, session, item, and request payload types.
 Keeps the access token in a module variable with explicit getter and setter functions.
 
 `src/auth/AuthContext.tsx`
-Restores the session and exposes user state, auth actions, and booting status to the app.
+Restores the session, clears query cache on logout/expiry, and exposes auth state and actions.
+
+`src/auth/AuthContext.test.tsx`
+Checks that logging out clears item data from the shared query cache.
 
 `src/auth/formErrors.ts`
 Maps backend auth validation detail paths and credential errors to form feedback.
@@ -53,7 +56,7 @@ Renders responsive navigation, current account information, and sign out around 
 Maps backend item validation details onto item editor fields.
 
 `src/features/items/hooks.ts`
-Owns item/session network requests, cache updates, invalidation, and optimistic rollback.
+Owns item network requests, cache updates, invalidation, and optimistic rollback.
 
 `src/features/items/hooks.test.tsx`
 Checks a failed optimistic item deletion restores the previous cached list.
@@ -66,6 +69,12 @@ Displays item search, status/rating filters, sorting, pagination, and create/edi
 
 `src/features/items/ItemStats.tsx`
 Displays backend totals and ratings with dedicated loading and error states.
+
+`src/features/sessions/hooks.ts`
+Owns active-session fetching and revoke mutations, updating the session cache after revocation.
+
+`src/features/sessions/queryKeys.ts`
+Defines the sessions cache key beside the session hooks that use it.
 
 `src/index.css`
 Imports Tailwind v4 and applies the small set of global document defaults.
@@ -86,7 +95,7 @@ Unused Vite logo asset left by the Vite template.
 Creates the shared QueryClient with a stale time and retry policy that avoids retrying 4xx errors.
 
 `src/lib/queryKeys.ts`
-Centralizes hierarchical cache keys for item lists/details/stats and active sessions.
+Centralizes hierarchical cache keys for item lists, details, and stats.
 
 `src/pages/DashboardPage.tsx`
 Composes the statistics cards and item list for the main workspace.
@@ -151,7 +160,8 @@ Excludes generated build output, dependencies, local environment files, and edit
 - `useQuery` fetches and caches item lists, item detail, aggregate stats, and sessions.
 - `useMutation` handles item writes and session revocation with lifecycle callbacks for cache coordination.
 - `useQueryClient` accesses the shared cache to cancel, optimistically update, roll back, invalidate, and remove cached data.
-- `useItems`, `useItem`, `useItemStats`, `useCreateItem`, `useUpdateItem`, `useDeleteItem`, `useSessions`, and `useRevokeSession` are feature hooks that wrap TanStack Query and keep Axios out of components.
+- `useItems`, `useItem`, `useItemStats`, `useCreateItem`, `useUpdateItem`, and `useDeleteItem` are item feature hooks that wrap TanStack Query and keep Axios out of components.
+- `useSessions` and `useRevokeSession` are session feature hooks in `src/features/sessions/hooks.ts`.
 - `keepPreviousData` is TanStack Query's placeholder helper, not a React hook; it retains the prior page while the next page loads.
 
 The app does not use `useCallback` or `useRef`: callbacks are not passed into memoized child trees and no mutable DOM/timer value needs to persist outside React state.

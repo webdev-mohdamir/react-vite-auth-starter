@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/useAuth'
-import { useRevokeSession, useSessions } from '../features/items/hooks'
+import { useRevokeSession, useSessions } from '../features/sessions/hooks'
 
 export function SessionsPage() {
   const { logout } = useAuth()

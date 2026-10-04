@@ -9,6 +9,7 @@ import type {
   User,
 } from '../api/contract'
 import { setAccessToken } from '../api/tokenStore'
+import { queryClient } from '../lib/queryClient'
 import { refreshAccessToken } from './refresh'
 
 export interface AuthContextValue {
@@ -58,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const expireSession = () => {
       setAccessToken(null)
       setUser(null)
+      queryClient.clear()
       navigate('/login', { replace: true, state: { from: location } })
     }
     window.addEventListener('auth:expired', expireSession)
@@ -79,6 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const clearLocalAuth = () => {
     setAccessToken(null)
     setUser(null)
+    queryClient.clear()
   }
 
   const logout = async (): Promise<void> => {

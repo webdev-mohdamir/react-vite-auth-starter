@@ -8,7 +8,3 @@ export const itemKeys = {
   detail: (id: string) => [...itemKeys.details(), id] as const,
   stats: () => [...itemKeys.all, 'stats'] as const,
 }
-
-export const sessionKeys = {
-  all: ['sessions'] as const,
-}
